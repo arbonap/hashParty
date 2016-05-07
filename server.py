@@ -58,8 +58,9 @@ def dashboard():
 
 @app.route('/search', methods=['GET', 'POST'])
 def searchresults():
-    hashtag = request.args.get('hashtag')
-    endpoint = "https://api.instagram.com/v1/tags/{}/media/recent?access_token={}".format(hashtag, session['user_token'])
+    hashtag = request.form.get('hashtag')
+    print "Hashtag:", hashtag
+    endpoint = "https://api.instagram.com/v1/tags/changetheratio/media/recent?access_token={}".format(session['user_token'])
     print "************************************************"
     print "endpoint:", endpoint
 
@@ -70,6 +71,7 @@ def searchresults():
     print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
     print "Response dictionary:"
     print response_dict
+    #jsonify only works on dictionaries (not on lists?)
     return jsonify(response_dict)
 
 ################################################################################
