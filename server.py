@@ -6,6 +6,10 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 #pretty print it up
 from pprint import pprint
+import time
+import datetime
+
+
 
 app = Flask(__name__)
 app.secret_key = os.environ['FLASK_KEY']
@@ -73,6 +77,18 @@ def searchresults():
     print "Response dictionary:"
 
     pprint(response_dict)
+
+    startdate = request.form.get('startdate')
+    enddate = request.form.get('enddate')
+
+    startdatetime = datetime.datetime.strptime(startdate, "%Y-%m-%d")
+    print "Start date:", startdatetime
+
+    start_timestamp = time.mktime(startdatetime.timetuple())
+    print "Timestamp!!!", start_timestamp
+
+    enddatetime = datetime.datetime.strptime(enddate, "%Y-%m-%d")
+    print "End date:", enddatetime
 
     #jsonify only works on dictionaries (not on lists?)
     return jsonify(response_dict)
