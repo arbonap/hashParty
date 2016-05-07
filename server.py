@@ -18,16 +18,16 @@ def index():
     return render_template("homepage.html")
 
 
-@app.route('/dash', methods=['GET'])
+@app.route('/instagram_callback', methods=['GET'])
 def dashboard():
 
     code = request.args.get('code')
     print code
 
-    payload = {"client_id": os.environ['INSTAGRAM_ID'],
-               "client_secret": os.environ['INSTAGRAM_SECRET'],
+    payload = {"client_id": os.environ['CLIENT_ID'],
+               "client_secret": os.environ['CLIENT_SECRET'],
                "grant_type": "authorization_code",
-               "redirect_uri": "http://localhost:5000/dash",
+               "redirect_uri": "http://localhost:5000/instagram_callback",
                "code": code,
                }
 
