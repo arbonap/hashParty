@@ -3,8 +3,9 @@ import os
 
 #Related Third Party Imports
 from flask import Flask, render_template, request, session, jsonify
-
 import requests
+#pretty print it up
+from pprint import pprint
 
 app = Flask(__name__)
 app.secret_key = os.environ['FLASK_KEY']
@@ -70,7 +71,9 @@ def searchresults():
     response_dict = resp.json()
     print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
     print "Response dictionary:"
-    print response_dict
+
+    pprint(response_dict)
+
     #jsonify only works on dictionaries (not on lists?)
     return jsonify(response_dict)
 
