@@ -115,30 +115,53 @@ def filter_results(start, end, tag, results_dict):
         Given start and end timestamps, return only results within the start and
         end timestamps. """
 
+    # Obtain the list of media results from the response dictionary
     results_list = results_dict['data']
+
+    # Initialize an empty list which will contain tuples of (tag_time, media_dictionary)
+    final_results = []
+
+    print "Length of list before starting", len(results_list)
     i = 0
-    print len(results_list)
     while i < len(results_list):
         text = results_list[i]['caption']['text']
-        # text_string = str(text)
-
-        # tag_string = str(tag)
-        # print "THIS IS TAG:", tag_string, "THIS IS TEXT:", text_string
-        print "I'm in the while loop here ~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        if text.find(tag) > 0: #this means it found the result. if it fails, it returns -1
-            #if tag is in the caption, go on to the next level:
-            print "I'm in the first if statment ~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        #check if tag is in "text" attribute
+        print "Index", i
+        if text.find(tag) > 0:
+            print "tag in caption"
             created_time = int(results_list[i]['caption']['created_time'])
-            # #if created time is outside the window of time
+            print "created time", created_time
             if created_time > end or created_time < start:
-                #then delete it!
-                print "second if statement~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                print "deleting"
                 del results_list[i]
+            else:
+                print "appending"
+                final_results.append({"timestamp": created_time, "media": results_list[i]})
+                i += 1
+        #else, check the comments key for each photo, and find the hashtag
         else:
-            i += 1
-    print "LENGTH OF LIST AFTER FILTERING!!!!", len(results_list)
+            print "tag not in caption"
+            media_id = results_list[i]['id']
+            endpoint = "https://api.instagram.com/v1/media/{}/comments?access_token={}".format(media_id, session['user_token'])
 
-    return results_list
+            resp = requests.get(endpoint)
+            resp_dict = resp.json()
+            resp_list = resp_dict['data']
+            j = 0
+            while j < len(resp_list):
+                text = resp_list[j]['text']
+                if text.find(tag) > 0:
+                    final_results.append({"timestamp": resp_list[j]['created_time'], "media": results_list[i]})
+                    print "appending"
+                    del resp_list[j]
+                else:
+                    print "deleting"
+                    del results_list[i]
+                    j += 1
+            i += 1
+
+    print "Length of list after filtering", len(results_list)
+    return final_results
 
 if __name__ == "__main__":
     app.debug = True
